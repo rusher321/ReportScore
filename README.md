@@ -1,17 +1,3 @@
----
-output: github_document
----
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
-)
-```
 
 # ReportScore
 
@@ -22,11 +8,10 @@ The goal of ReportScore is to compute the reportscore of pathway or module
 
 ## Installation
 
-You can install the released version of ReportScore from [CRAN](https://CRAN.R-project.org) with:
+This package can be installed using [devtools](http://cran.r-project.org/web/packages/devtools/index.html).
 
 ``` r
-install.packages("ReportScore")
-```
+devtools::install_github('rusher321/ReportScore')
 
 ## Example
 
@@ -37,18 +22,20 @@ library(ReportScore)
 ## basic example code
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+We welcome comments, criticisms, and especially contributions! GitHub
+issues are the preferred way to report bugs, ask questions, or request
+new features. You can submit issues here:
 
-```{r cars}
-summary(cars)
-```
+<https://github.com/rusher321/ReportScore/issues>
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. You could also use GitHub Actions to re-render `README.Rmd` every time you push. An example workflow can be found here: <https://github.com/r-lib/actions/tree/master/examples>.
+Meta
+----
 
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
+-   Please [report any issues or
+    bugs](https://github.com/rusher321/microbiotaPair/issues).
+-   License: MIT
+-   Get citation information for `microbiotaPair` in R doing
+    `citation(package = 'ReportScore')`
+-   Please note that this project is released with a [Contributor Code
+    of Conduct](CONDUCT.md). By participating in this project you agree
+    to abide by its terms.
