@@ -10,8 +10,9 @@ The goal of ReportScore is to compute the reportscore of pathway or module
 
 This package can be installed using [devtools](http://cran.r-project.org/web/packages/devtools/index.html).
 
-``` r
+```r
 devtools::install_github('rusher321/ReportScore')
+```
 
 ## Example
 
@@ -34,7 +35,7 @@ Meta
 -   Please [report any issues or
     bugs](https://github.com/rusher321/microbiotaPair/issues).
 -   License: MIT
--   Get citation information for `microbiotaPair` in R doing
+-   Get citation information for `ReportScore` in R doing
     `citation(package = 'ReportScore')`
 -   Please note that this project is released with a [Contributor Code
     of Conduct](CONDUCT.md). By participating in this project you agree
