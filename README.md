@@ -36,6 +36,13 @@ new features. You can submit issues here:
 
 <https://github.com/rusher321/ReportScore/issues>
 
+ToDo 
+-----
+
+- Visualization of reportscore result 
+- parallel compute of multi group 
+
+
 Meta
 ----
 
