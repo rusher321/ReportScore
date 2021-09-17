@@ -11,7 +11,7 @@ The goal of ReportScore is to compute the reportscore of pathway or module
 This package can be installed using [devtools](http://cran.r-project.org/web/packages/devtools/index.html).
 
 ```r
-devtools::install_github('rusher321/ReportScore')
+devtools::install_github('rusher321/ReportScore@master')
 ```
 
 ## Example
