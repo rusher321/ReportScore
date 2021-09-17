@@ -20,11 +20,14 @@ This is a basic example which shows you how to solve a common problem:
 
 ```{r example}
 library(ReportScore)
+
 ## basic example code
 pr <- read.table("test/test.profile.txt",row.names = 1,header = T,sep = "\t")
 grp <- read.table("test/test.group.txt",row.names = 1,header = T,sep = "\t")
-
 res <- ReporterScore(pr, grp, paired = T, database = "./database")
+
+## if you want update the datebase 
+download_data(db_dir = "database/")
 ```
 
 We welcome comments, criticisms, and especially contributions! GitHub
