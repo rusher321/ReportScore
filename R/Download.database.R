@@ -13,7 +13,7 @@ download_data <- function(db_dir = "database/"){
   library(tidyverse)
 
   # database directory
-  db_dir = "database/"
+  #db_dir = "database/"
   dir.create(db_dir)
 
   # pathway/module list
@@ -67,7 +67,7 @@ download_data <- function(db_dir = "database/"){
   pwList = pwList[pwList$n>0,]
   mdList = mdList[mdList$n>0,]
 
-  write.table(pwList,paste0(db_dir,"pathway.annotation.txt"))
-  write.table(mdList,paste0(db_dir,"module.annotation.txt"))
+  write.table(pwList, paste0(db_dir, "pathway.annotation.txt"))
+  write.table(mdList, paste0(db_dir, "module.annotation.txt"))
 
 }
