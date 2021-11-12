@@ -166,7 +166,7 @@ GetCoverage <- function(pro, con, database){
 #' @export
 #'
 #' @examples
-Getzscore <- function(dat, con, paired = F, hist = F){
+Getzscore <- function(dat, con, paired = F, hist = F, adjust = T){
 
   dat <- dat[rowSums(dat)!=0, ]
   glv <- as.factor(con[,1])
@@ -213,9 +213,13 @@ Getzscore <- function(dat, con, paired = F, hist = F){
     x <- dat[,i] # pvalue
     x <- x[!is.na(x)]
     res <- res[!is.na(res[,1]),]
-    x.a <- p.adjust(x, method = "BH")
+    if(adjust){ # add adjust parameter to decide if to adjust the pvalue
+      x.a <- p.adjust(x, method = "BH")
+    }else{
+      x.a <- x
+    }
     res[,3+i] <- x.a
-    z.a <- qnorm(1-x)
+    z.a <- qnorm(1-x) # this is fit for less; twotail +/-qnorm(1-p/2); righttail qnorm(p)
     for(j in 1:length(z.a))
     {
       if((z.a[j]>0) && is.infinite(z.a[j])){
@@ -308,7 +312,8 @@ PermZscore <- function(dat, cov, perm = 1000){
 
   kolst <- lapply(cov$KO, function(x) unlist(strsplit(x, ",")))
   kolst <- unlist(kolst)
-  kolst <- kolst[duplicated(kolst)]
+  #kolst <- kolst[duplicated(kolst)]
+  kolst <- unique(kolst)
   dat <- dat[rownames(dat) %in% kolst,]
 
   zcol <- 7:9
@@ -370,9 +375,9 @@ GetReporterScore <- function(dat, perm, cov, occ = 0.4){
       zscore[,i] <- zscore[,i]/sqrt(n_cov)
     }
     zscore <- colSums(zscore)
-    occ <- tmp[, grep("occ",colnames(tmp)),drop=F]
-    occ1 <- sum(occ[,1] > 0)
-    occ2 <- sum(occ[,2] > 0)
+    occ0 <- tmp[, grep("occ",colnames(tmp)),drop=F] ## here
+    occ1 <- sum(occ0[,1] > 0)
+    occ2 <- sum(occ0[,2] > 0)
     a <- perm[as.character(n_cov), ] # perm zscore
     for(i in 1:3){
       if(a[i*2] == 0){  # sd if zero
@@ -403,7 +408,7 @@ GetReporterScore <- function(dat, perm, cov, occ = 0.4){
 #' @export
 #'
 #' @examples
-ReporterScore <- function(pr, grp, paired = F, database = "./database", ...){
+ReporterScore <- function(pr, grp, paired = F, database = "./database", occ = 0.1, adjust =T){
   # step1 test
   res.test <- WilcoxTest(pr,grp,paired = paired)
 
@@ -411,7 +416,7 @@ ReporterScore <- function(pr, grp, paired = F, database = "./database", ...){
   res.cov <- GetCoverage(pr,grp, database)
 
   # step3 z-score
-  res.z <- Getzscore(pr,grp,paired = paired)
+  res.z <- Getzscore(pr,grp,paired = paired, adjust)
 
   # step4 cover number
   cov.pw <- CoverNumber(res.z, res.cov$pathwayCoverage)
@@ -422,8 +427,8 @@ ReporterScore <- function(pr, grp, paired = F, database = "./database", ...){
   perm.mod <- PermZscore(res.z, cov.md, perm = 1000)
 
   # step6 reporter score
-  out.ptw <- GetReporterScore(res.z, perm.ptw, cov.pw, ...)
-  out.mod <- GetReporterScore(res.z, perm.mod, cov.md, ...)
+  out.ptw <- GetReporterScore(res.z, perm.ptw, cov.pw, occ)
+  out.mod <- GetReporterScore(res.z, perm.mod, cov.md, occ)
 
   list(pathway = out.ptw, module = out.mod)
 
