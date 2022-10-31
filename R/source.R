@@ -357,12 +357,13 @@ PermZscore <- function(dat, cov, perm = 1000){
 #' @export
 #'
 #' @examples
-GetReporterScore <- function(dat, perm, cov, occ = 0.4){
+GetReporterScore <- function(dat, perm, cov, occ = 0.4, lev){
 
-  cov$zscore1 <- NA
-  cov$zscore2 <- NA
-  cov$zscore3 <- NA
-  cov$zscore <- NA
+  cov$zscore_two <- NA
+  cov$zscore_less <- NA
+  cov$zscore_greater <- NA
+  cov$reportscore <- NA
+  cov$dir <- paste0(lev[1], " = ", lev[2])
 
   for(x in 1:nrow(cov)){
 
@@ -386,29 +387,32 @@ GetReporterScore <- function(dat, perm, cov, occ = 0.4){
         zscore[i] <- (zscore[i]-a[i*2-1])/a[i*2]
       }
     }
-    cov[x, (ncol(cov)-3):(ncol(cov)-1)] <- zscore
-
-
+    cov[x, (ncol(cov)-4):(ncol(cov)-2)] <- zscore
     if(occ1/cov$n[x] >= occ | occ2/cov$n[x] >= occ){
-      cov$zscore[x] <- ifelse(zscore[2] > 0, zscore[2], -zscore[3])
+      cov$reportscore[x] <- ifelse(zscore[2] > 0, zscore[2], -zscore[3])
     }
   }
+  cov$dir <- ifelse(cov$reportscore > 1.64, paste0(lev[1], " < ", lev[2]),
+                    ifelse(cov$reportscore < -1.64,paste0(lev[1], " > ", lev[2]),
+                           cov$dir))
   cov
 }
 
 #'  ReporterScore
 #'  The command to compute the reportscore
-#' @param pr
-#' @param grp
-#' @param paired
-#' @param database
-#' @param ...
+#' @param pr, ko profile, row is KO ID, col is sample ID
+#' @param grp, group information, only acess two factor
+#' @param paired, wilcox test is paired or no paired
+#' @param database, database location
+#' @param adjust, logistic, if adjust the pvalue
 #'
-#' @return
+#' @return list, include ko pathway module compare result
 #' @export
 #'
 #' @examples
 ReporterScore <- function(pr, grp, paired = F, database = "./database", occ = 0.1, adjust =T){
+
+  lev <- levels(as.factor(grp[,1]))
   # step1 test
   res.test <- WilcoxTest(pr,grp,paired = paired)
 
@@ -427,9 +431,82 @@ ReporterScore <- function(pr, grp, paired = F, database = "./database", occ = 0.
   perm.mod <- PermZscore(res.z, cov.md, perm = 1000)
 
   # step6 reporter score
-  out.ptw <- GetReporterScore(res.z, perm.ptw, cov.pw, occ)
-  out.mod <- GetReporterScore(res.z, perm.mod, cov.md, occ)
+  out.ptw <- GetReporterScore(res.z, perm.ptw, cov.pw, occ, lev = lev)
+  out.mod <- GetReporterScore(res.z, perm.mod, cov.md, occ, lev = lev)
 
-  list(pathway = out.ptw, module = out.mod)
+  list(ko = res.test, pathway = out.ptw, module = out.mod)
 
 }
+
+#' ReportVis
+#'
+#' @param reportres
+#' @param lev
+#' @param color
+#' @param multigroup
+#' @param cutoff
+#'
+#' @return
+#' @export
+#'
+#' @examples
+ReportVis <- function(reportres, lev = "pathway" ,color = c("#2470a0", "#DE3C3C"),
+                      multigroup = NULL, cutoff = 1.64, exclude = NULL){
+
+  if(is.null(multigroup)){
+    if(lev == "pathway"){
+      qdat <- reportres$pathway
+    }else{
+      qdat <- reportres$module
+    }
+    groupinf <- gsub("coverage_", "", colnames(qdat)[6:7])
+    qdat$enrich <- ifelse(qdat$reportscore > cutoff, groupinf[2] ,
+                          ifelse(qdat$reportscore < -cutoff, groupinf[1],
+                                 " None"))
+  }else{
+    qdatlist <- lapply(reportres, function(x){
+      x <- ifelse(lev == "pathway", x$pathway, x$module)
+      tmp_qdat <- x[, c("Description", "Class", "reportscore", "dir")]
+      groupinf <- gsub("coverage_", "", colnames(tmp_qdat)[6:7])
+      tmp_qdat$enrich <- " None"
+      tmp_qdat$enrich <- ifelse(tmp_qdat$reportscore > cutoff, groupinf[2] ,
+                                ifelse(tmp_qdat$reportscore < -cutoff, groupinf[1],
+                                       tmp_qdat$enrich))
+      tmp_qdat$group <- paste(groupinf, sep = " vs. ")
+    }
+    )
+    qdat <- do.call("rbind", qdatlist)
+  }
+
+  qdat <- qdat[!is.na(qdat$reportscore), ]
+  if(!is.null(exclude)){
+    qdat <- qdat[qdat$enrich != " None", ]
+  }
+
+  fig <-  ggplot(qdat, aes(y = Description, x = reportscore, color= enrich))+
+    geom_vline(xintercept = c(-cutoff, cutoff),linetype="dashed",color="grey50")+
+    geom_segment(xend=0,aes(yend=Description),size=5)  +
+    geom_vline(xintercept = 0) +
+    theme_bw() +
+    scale_color_manual(values = color)+
+    theme(panel.grid.major.y=element_blank(),
+          panel.grid.major.x=element_blank(),
+          panel.grid.minor.x=element_blank(),
+          strip.text.y = element_blank(),
+          axis.title=element_text(size=10,face="bold"),
+          strip.text = element_text(face = "bold", size = 10),
+          axis.text.x = element_text(color = "black", size= 6),
+          axis.text.y = element_text(color = "black", size= 10))+
+    xlab("ReportScore")+ylab(lev)
+
+  if(!is.null(multigroup)){
+    fig <- fig+facet_grid(Class~group, scales = "free_y", space = "free")
+  }else{
+    fig <- fig+facet_grid(Class~., scales = "free_y", space = "free")
+  }
+
+  return(fig)
+
+}
+
+

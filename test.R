@@ -12,7 +12,11 @@ pr_sub <- pr[, rownames(grp_sub)]
 
 res_D2 <- ReporterScore(pr_sub, grp_sub, paired = F, database = "./database", occ = 0.1)
 
-#### D7
+fig <- ReportVis(res_D2, color = c("#2470a0", "#DE3C3C"), exclude = T)
+dir.create("fig")
+ggsave("fig/test.pdf", fig, device = "pdf", height = 12, width = 15)
+
+  #### D7
 grp_sub <- grp[which(grp$TimePoint == "Day7"), 1, drop=F]
 grp_sub$Protein <- ifelse(grp_sub$Protein == "C-Pork",
                           "B-Beef", grp_sub$Protein)
