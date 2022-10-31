@@ -22,9 +22,16 @@ This is a basic example which shows you how to solve a common problem:
 library(ReportScore)
 
 ## basic example code
-pr <- read.table("test/test.profile.txt",row.names = 1,header = T,sep = "\t")
-grp <- read.table("test/test.group.txt",row.names = 1,header = T,sep = "\t")
-res <- ReporterScore(pr, grp, paired = T, database = "./database")
+pr <- read.table("testdata/all.KEGG.abun.txt",row.names = 1,header = T,sep = "\t")
+grp <- read.table("testdata/sampleinfo.txt",row.names = 1,header = T,sep = "\t")
+
+grp_sub <- grp[which(grp$TimePoint == "Day2"), 1, drop=F]
+grp_sub$Protein <- ifelse(grp_sub$Protein == "C-Pork", "B-Beef", grp_sub$Protein)
+pr_sub <- pr[, rownames(grp_sub)]
+
+res_D2 <- ReporterScore(pr_sub, grp_sub, paired = F, database = "./database", occ = 0.1)
+
+fig <- ReportVis(res_D2, color = c("#2470a0", "#DE3C3C"), exclude = T)
 
 ## if you want update the datebase 
 download_data(db_dir = "database/")
