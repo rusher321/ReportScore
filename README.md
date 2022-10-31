@@ -28,6 +28,10 @@ res <- ReporterScore(pr, grp, paired = T, database = "./database")
 
 ## if you want update the datebase 
 download_data(db_dir = "database/")
+
+## if you want plot the output
+fig <- ReportVis(res_D2, color = c("#2470a0", "#DE3C3C"), exclude = T)
+
 ```
 
 We welcome comments, criticisms, and especially contributions! GitHub
@@ -39,9 +43,8 @@ new features. You can submit issues here:
 ToDo 
 -----
 
-- Visualization of reportscore result 
-- parallel compute of multi group 
-- XXX
+- [√]Visualization of reportscore result 
+- [ ]parallel compute of multi group 
 
 
 Meta
