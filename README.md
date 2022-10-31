@@ -37,7 +37,7 @@ fig <- ReportVis(res, color = c("#2470a0", "#DE3C3C"), exclude = T)
 ```
 ## Figure 
 the output like 
-![this](fig/test.png)
+<img src="fig/test.png" width="500">
 
 We welcome comments, criticisms, and especially contributions! GitHub
 issues are the preferred way to report bugs, ask questions, or request
