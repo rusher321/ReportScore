@@ -32,7 +32,7 @@ download_data(db_dir = "database/")
 ## if you want plot the output
 fig <- ReportVis(res, color = c("#2470a0", "#DE3C3C"), exclude = T)
 
-## the **test.R** have real data can to test
+## the ***test.R*** have real data can to test
 
 ```
 ## Figure 
