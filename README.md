@@ -30,7 +30,9 @@ res <- ReporterScore(pr, grp, paired = T, database = "./database")
 download_data(db_dir = "database/")
 
 ## if you want plot the output
-fig <- ReportVis(res_D2, color = c("#2470a0", "#DE3C3C"), exclude = T)
+fig <- ReportVis(res, color = c("#2470a0", "#DE3C3C"), exclude = T)
+
+## the **test.R** have real data can to test
 
 ```
 
