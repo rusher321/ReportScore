@@ -35,6 +35,8 @@ fig <- ReportVis(res, color = c("#2470a0", "#DE3C3C"), exclude = T)
 ## the **test.R** have real data can to test
 
 ```
+## Figure 
+the output like ![this](fig/test.png)
 
 We welcome comments, criticisms, and especially contributions! GitHub
 issues are the preferred way to report bugs, ask questions, or request
